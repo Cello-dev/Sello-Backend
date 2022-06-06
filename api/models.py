@@ -14,10 +14,3 @@ class Account(models.Model):
 	
 	def __str__(self):
 		return self.email
-
-class Login(models.Model):
-	email = models.EmailField(max_length=255)
-	password = models.CharField(max_length=255)
-	
-	def __str__(self):
-		return self.email + " : " + self.password
