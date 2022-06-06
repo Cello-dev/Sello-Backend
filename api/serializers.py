@@ -11,7 +11,7 @@ class AccountSerializer(serializers.ModelSerializer):
 class LoggedInAccountSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Account
-		fields = ('id', 'email', 'created_on')
+		fields = ('id', 'email', 'created_on', 'handle')
 		
 class LoginSerializer(serializers.ModelSerializer):
 	class Meta:
