@@ -35,7 +35,7 @@ class LoginView(APIView):
 			return Response({"error":"Incorrect Email or Password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class RegisterView(APIView):
-	serializer_class = AccountLoginSerializer
+	serializer_class = AccountSerializer
 	def post(self, request):
 		account = AccountSerializer(data=request.data)
 		if account.is_valid():
