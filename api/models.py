@@ -10,7 +10,7 @@ class Account(models.Model):
 	created_on = models.DateTimeField(auto_now=True)
 
 	#Blank Fields
-	handle = models.models.CharField(max_length=50, blank=True)
+	handle = models.CharField(max_length=50, blank=True)
 	
 	def __str__(self):
 		return self.email
