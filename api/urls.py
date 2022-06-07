@@ -8,6 +8,7 @@ urlpatterns = [
 	path('login', views.LoginView.as_view(), name="login"),
 	path('register', views.RegisterView.as_view(), name="register"),
 	path('account/<str:email>', views.AccountView.as_view(), name="account"),
+	path('forgotpassword', views.ForgotPasswordView.as_view(), name="forgotpassword"),
 	path('auth', include('rest_framework.urls', namespace='rest_framework')),
 	path('', include(router.urls))
 ]

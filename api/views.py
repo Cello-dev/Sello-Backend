@@ -1,3 +1,4 @@
+import email
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.core import serializers
@@ -5,7 +6,7 @@ from rest_framework import permissions, generics, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import AccountSerializer, AccountLoginSerializer, LoggedInAccountSerializer
+from .serializers import AccountSerializer, AccountLoginSerializer, LoggedInAccountSerializer, ForgotPasswordSerializer
 from .models import Account
 
 import argon2
@@ -43,7 +44,17 @@ class RegisterView(APIView):
 			response = LoggedInAccountSerializer(account_obj)
 			return Response(response.data, status=status.HTTP_201_CREATED)
 		return Response(account.errors, status=status.HTTP_400_BAD_REQUEST)
-		
+
+
+class ForgotPasswordView(APIView):
+	serializer_class = ForgotPasswordSerializer
+	def post(self, request):
+		try:
+			account = Account.objects.get(email__iexact=request.data["email"])                             
+			response  = ForgotPasswordSerializer(account)
+			return Response({"message":"Please check your Email, a link to reset your Password has been sent to it."}, status=status.HTTP_200_OK)
+		except:
+			return Response({"error":"There is no Account connected to that Email."}, status=status.HTTP_404_NOT_FOUND)
 			
 		
-	
+			
