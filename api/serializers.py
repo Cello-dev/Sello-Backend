@@ -24,3 +24,8 @@ class AccountLoginSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Account
 		fields = ('email', 'password')
+
+class ForgotPasswordSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Account
+		fields = ('email',)
