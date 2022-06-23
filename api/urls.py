@@ -17,6 +17,7 @@ urlpatterns = [
 	path('resetpassword', views.ResetPasswordView.as_view(), name="resetpassword"),
 	path('verifyemail', views.VerifyEmailView.as_view(), name="verifyemail"),
 	path('resendverifyemail', views.EmailResendView.as_view(), name="resendverifyemail"),
+	path('validatetoken', views.ValidateTokenView.as_view(), name="validatetoken"),
 	path('auth', include('rest_framework.urls', namespace='rest_framework')),
 	path('', include(router.urls))
 ]

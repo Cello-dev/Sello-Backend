@@ -47,3 +47,17 @@ class VerifyEmailToken(Token):
 				break
 		return password
 	key =  models.CharField(default=get_key, max_length=255, unique=True, editable=False)
+
+class ResetPasswordToken(Token):
+	def get_key():
+		alphabet = string.ascii_letters + string.digits
+		while(True):
+			try:
+				password = ''.join(secrets.choice(alphabet) for i in range(8))
+				VerifyEmailToken.objects.all().get(key=password)
+			except:
+				break
+		return password
+	key =  models.CharField(default=get_key, max_length=255, unique=True, editable=False)
+	isValidated = models.BooleanField(default=False)
+

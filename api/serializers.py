@@ -50,7 +50,7 @@ class VerificationTokenSerializer(serializers.ModelSerializer): # Shows all the 
 		fields = '__all__'
 
 # Misc Serializers
-class VerifyEmailSerializer(serializers.Serializer): # Asks for the required fields for Email Verification.
+class TokenSerializer(serializers.Serializer): # Asks for the required fields for Email Verification.
 	key = serializers.CharField(max_length=8)
 
 class ResetPasswordSerializer(serializers.Serializer): # Asks for the required fields for reseting a password.
