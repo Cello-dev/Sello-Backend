@@ -4,7 +4,6 @@ from .models import Account, VerifyEmailToken
 
 # Account Serializers
 class AccountSerializer(serializers.ModelSerializer): # Shows all the data from an account.
-
 	class Meta:
 		model = Account
 		fields = '__all__'
@@ -12,9 +11,9 @@ class AccountSerializer(serializers.ModelSerializer): # Shows all the data from 
 class PublicAccountSerializer(serializers.ModelSerializer): # Only shows the publicly available data from an Account.
 	class Meta:
 		model = Account
-		fields = ('id', 'handle', 'email', 'emailVerified')
+		fields = ('id', 'handle', 'email', 'emailVerified', 'date_joined')
 
-class AccountRegisterSerializer(serializers.ModelSerializer): # Asks for the required fields for registrations.
+class AccountRegisterSerializer(serializers.ModelSerializer): # Asks for the required fields for registration.
 	def create(self, validated_data):
 		account = Account.objects.create(
 			email=validated_data["email"],
@@ -27,7 +26,7 @@ class AccountRegisterSerializer(serializers.ModelSerializer): # Asks for the req
 		model = Account
 		fields = ('email', 'password', 'handle')
 
-class AccountLoginSerializer(serializers.ModelSerializer): # Asks for the required fields for registrations.
+class AccountLoginSerializer(serializers.ModelSerializer): # Asks for the required fields for login.
 	class Meta:
 		model = Account
 		fields = ('email', 'password')

@@ -159,7 +159,7 @@ class ResetPasswordView(APIView):
 				if token.isValidated:
 					now = (datetime.now(timezone.utc).astimezone())
 					if now <= token.expiry_date:
-						token.owner.password = argon_hash(request_serializer.data["password"])
+						token.owner.set_password(request_serializer.data["password"])
 						token.owner.save(update_fields=['password'])
 						token.delete()
 						return Response({"message":"Password has been reset"}, status=status.HTTP_200_OK)

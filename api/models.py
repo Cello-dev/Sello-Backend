@@ -69,4 +69,3 @@ class ResetPasswordToken(MyAbstractToken):
 
 	def __str__(self):
 		return self.key
-
