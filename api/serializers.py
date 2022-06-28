@@ -1,19 +1,9 @@
 from rest_framework import serializers
 
-from argon2 import PasswordHasher
-
 from .models import Account, VerifyEmailToken
-
-def argon_hash(password):
-	ph = PasswordHasher()
-	return ph.hash(password)
 
 # Account Serializers
 class AccountSerializer(serializers.ModelSerializer): # Shows all the data from an account.
-	def to_internal_value(self, data):
-		newdata = data.copy()
-		newdata["password"] = argon_hash(data["password"])
-		return super().to_internal_value(newdata)
 
 	class Meta:
 		model = Account
@@ -22,13 +12,17 @@ class AccountSerializer(serializers.ModelSerializer): # Shows all the data from 
 class PublicAccountSerializer(serializers.ModelSerializer): # Only shows the publicly available data from an Account.
 	class Meta:
 		model = Account
-		fields = ('id', 'handle', 'email', 'created_date', 'emailVerified')
+		fields = ('id', 'handle', 'email', 'emailVerified')
 
 class AccountRegisterSerializer(serializers.ModelSerializer): # Asks for the required fields for registrations.
-	def to_internal_value(self, data):
-		newdata = data.copy()
-		newdata["password"] = argon_hash(data["password"])
-		return super().to_internal_value(newdata)
+	def create(self, validated_data):
+		account = Account.objects.create(
+			email=validated_data["email"],
+			handle=validated_data["handle"]
+		)
+		account.set_password(validated_data['password'])
+		account.save()
+		return account
 	class Meta:
 		model = Account
 		fields = ('email', 'password', 'handle')

@@ -7,12 +7,12 @@ router = routers.DefaultRouter()
 router.register('accounts', views.AccountViewSet, basename='accounts')
 router.register('tokens', views.TokenViewSet, basename='tokens')
 
-r = routers.SimpleRouter()
-
 urlpatterns = [
 	path('login', views.LoginView.as_view(), name="login"),
 	path('register', views.RegisterView.as_view(), name="register"),
-	path('account/<str:email>', views.AccountView.as_view(), name="account"),
+	path('accounts/email/<str:email>', views.AccountByEmailView.as_view(), name="account_by_email"),
+	path('accounts/handle/<str:handle>', views.AccountByHandleView.as_view(), name="account_by_handle"),
+	path('accounts/id/<str:id>', views.AccountByIDView.as_view(), name="account_by_id"),
 	path('forgotpassword', views.ForgotPasswordView.as_view(), name="forgotpassword"),
 	path('resetpassword', views.ResetPasswordView.as_view(), name="resetpassword"),
 	path('verifyemail', views.VerifyEmailView.as_view(), name="verifyemail"),
