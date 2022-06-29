@@ -16,7 +16,7 @@ class UpdateAccountSerializer(serializers.ModelSerializer): # Fields that are up
 class PublicAccountSerializer(serializers.ModelSerializer): # Public Data.
 	class Meta:
 		model = Account
-		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url, name')
+		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name')
 
 class PrivateAccountSerializer(serializers.ModelSerializer): # Private Data.
 	class Meta:
