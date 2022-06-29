@@ -1,6 +1,8 @@
-from rest_framework import permissions, generics, viewsets, status
+from rest_framework import generics, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
@@ -11,56 +13,33 @@ from .serializers import *
 from .models import Account, VerifyEmailToken, ResetPasswordToken
 
 # Create your views here.
-
-class AccountViewSet(viewsets.ModelViewSet):
-	serializer_class = AccountSerializer
-	permission_classes = (IsAuthenticated,)
-
-	def get_queryset(self):
-		queryset = Account.objects.all()
-		return queryset
-
-class AccountByEmailView(generics.RetrieveUpdateDestroyAPIView):
-	serializer_class = AccountSerializer
-	permission_classes = (IsAuthenticated,)
-	lookup_field = "email"
-	
-	def get_queryset(self):
-		queryset = Account.objects.all()
-		return queryset
-
-class AccountByHandleView(generics.RetrieveUpdateDestroyAPIView):
-	serializer_class = AccountSerializer
+class AccountByHandleView(generics.RetrieveAPIView):
+	queryset = Account.objects.all()
+	serializer_class = PublicAccountSerializer
 	permission_classes = (IsAuthenticated,)
 	lookup_field = "handle"
-	
-	def get_queryset(self):
-		queryset = Account.objects.all()
-		return queryset
 
-class AccountByIDView(generics.RetrieveUpdateDestroyAPIView):
-	serializer_class = AccountSerializer
+class AccountByIDView(generics.RetrieveAPIView):
+	queryset = Account.objects.all()
+	serializer_class = PublicAccountSerializer
 	permission_classes = (IsAuthenticated,)
+	lookup_field = "id"
+
+class UpdateAccountView(generics.UpdateAPIView):
+	serializer_class = UpdateAccountSerializer
+	permission_classes = (IsAuthenticated,)
+	parser_classes = (MultiPartParser, FormParser)
 	lookup_field = "id"
 	
 	def get_queryset(self):
-		queryset = Account.objects.all()
+		queryset = Account.objects.filter(id=self.request.user.id)
 		return queryset
 
-class TokenViewSet(viewsets.ModelViewSet):
-	serializer_class = VerificationTokenSerializer
-	permission_classes = (IsAuthenticated,)
-
-	def get_queryset(self):
-		queryset = VerifyEmailToken.objects.all()
-		return queryset
-		
 class LoginView(APIView):
-	serializer_class = AccountLoginSerializer
+	serializer_class = LoginSerializer
 	def post(self, request):
 		try:
 			account = Account.objects.get(email__iexact=request.data["email"]) #Try to Look up the account based on email. Throws an exception
-			print(account.id)
 			if account.check_password(raw_password=request.data["password"]):
 				auth_token, _ = Token.objects.update_or_create(user=account)
 				public_account = PublicAccountSerializer(account)
@@ -71,9 +50,9 @@ class LoginView(APIView):
 		return Response({"error":"Incorrect Email or Password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class RegisterView(APIView):
-	serializer_class = AccountRegisterSerializer
+	serializer_class = RegisterSerializer
 	def post(self, request):
-		account = AccountRegisterSerializer(data=request.data)
+		account = RegisterSerializer(data=request.data)
 		if account.is_valid():
 			account_obj = account.create(validated_data=account.data)
 			code = VerifyEmailToken(account_obj.id)
@@ -86,20 +65,6 @@ class RegisterView(APIView):
 				response = {"error":"Verification Email Failed", "data":public_account.data}
 			return Response(response, status=status.HTTP_201_CREATED)
 		return Response(account.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class EmailResendView(APIView):
-	serializer_class = ForgotPasswordSerializer
-	def post(self, request):
-		try:
-			account = Account.objects.get(email__iexact=request.data["email"])
-			if not account.emailVerified:
-				code = VerifyEmailToken(account.id)
-				code.save()
-				send_email(make_verify_email(account.email, code.key))
-				return Response({"message":"A verification email has been sent to {email}.".format(email=account.email)}, status=status.HTTP_200_OK)
-			return Response({"message":"Email Already Verified"}, status=status.HTTP_200_OK)
-		except Exception as e:
-			return Response({"error":str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 class VerifyEmailView(APIView):
 	serializer_class = TokenSerializer
@@ -118,6 +83,20 @@ class VerifyEmailView(APIView):
 			else:
 				token.delete()
 				return Response({"message":"Token is expired"}, status=status.HTTP_401_UNAUTHORIZED)
+		except Exception as e:
+			return Response({"error":str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+class EmailResendView(APIView):
+	serializer_class = ForgotPasswordSerializer
+	def post(self, request):
+		try:
+			account = Account.objects.get(email__iexact=request.data["email"])
+			if not account.emailVerified:
+				code = VerifyEmailToken(account.id)
+				code.save()
+				send_email(make_verify_email(account.email, code.key))
+				return Response({"message":"A verification email has been sent to {email}.".format(email=account.email)}, status=status.HTTP_200_OK)
+			return Response({"message":"Email Already Verified"}, status=status.HTTP_200_OK)
 		except Exception as e:
 			return Response({"error":str(e)}, status=status.HTTP_404_NOT_FOUND)
 

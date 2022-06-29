@@ -13,24 +13,23 @@ class Account(AbstractUser):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	email = models.EmailField(unique=True)
 	handle = models.CharField(max_length=50, blank=True)
-	emailVerified = models.BooleanField(default=False)
+	email_verified = models.BooleanField(default=False)
 
+	avatar_url = models.ImageField(upload_to="images/profiles/", blank=True, null=True)
+	name = models.CharField(max_length=100, blank=True)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = []
 
 	objects = AccountManager()
 
 	def __str__(self):
-		return self.email
-
-	class Meta:
-		pass
+		return str(self.id) + " : " + str(self.email)
 
 class MyAbstractToken(models.Model):
 	def generate_expiry(time_delta):
 		return datetime.now(timezone.utc).astimezone() + time_delta
 	def generate_token(model, length):
-		alphabet = string.ascii_letters + string.digits
+		alphabet = string.digits
 		while(True):
 			try:
 				password = ''.join(secrets.choice(alphabet) for i in range(length))
@@ -46,7 +45,7 @@ class MyAbstractToken(models.Model):
 
 class VerifyEmailToken(MyAbstractToken):
 	def get_key():
-		return MyAbstractToken.generate_token(VerifyEmailToken, 8)
+		return MyAbstractToken.generate_token(VerifyEmailToken, 6)
 	def get_expiry():
 		return MyAbstractToken.generate_expiry(timedelta(minutes=10))
 
@@ -59,13 +58,13 @@ class VerifyEmailToken(MyAbstractToken):
 
 class ResetPasswordToken(MyAbstractToken):
 	def get_key():
-		return MyAbstractToken.generate_token(ResetPasswordToken, 8)
+		return MyAbstractToken.generate_token(ResetPasswordToken, 6)
 	def get_expiry():
 		return MyAbstractToken.generate_expiry(timedelta(minutes=10))
 
 	key =  models.CharField(default=get_key, max_length=255, unique=True, editable=False)
 	expiry_date = models.DateTimeField(default=get_expiry, editable=False)
-	isValidated = models.BooleanField(default=False)
+	is_validated = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.key
