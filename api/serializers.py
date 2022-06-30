@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Account, VerifyEmailToken
+
+from .models import Account, Product, VerifyEmailToken
 
 # Account Serializers
 class AccountSerializer(serializers.ModelSerializer): # Debug Use Only.
@@ -22,6 +23,11 @@ class PrivateAccountSerializer(serializers.ModelSerializer): # Private Data.
 	class Meta:
 		model = Account
 		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name', 'first_name', 'last_name')
+
+class ProductSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Product
+		fields = '__all__'
 
 class LoginSerializer(serializers.ModelSerializer): # Asks for the required fields for login.
 	class Meta:
