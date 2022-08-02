@@ -8,6 +8,7 @@ from . import views
 router = routers.DefaultRouter()
 
 urlpatterns = [
+	path('me', views.AccountByTokenView.as_view(), name='me'),
 	path('login', views.LoginView.as_view(), name="login"),
 	path('register', views.RegisterView.as_view(), name="register"),
 	path('verifyemail', views.VerifyEmailView.as_view(), name="verifyemail"),
@@ -15,9 +16,9 @@ urlpatterns = [
 	path('forgotpassword', views.ForgotPasswordView.as_view(), name="forgotpassword"),
 	path('validatetoken', views.ValidateTokenView.as_view(), name="validatetoken"),
 	path('resetpassword', views.ResetPasswordView.as_view(), name="resetpassword"),
-	path('account/<uuid:id>', views.AccountByIDView.as_view(), name="account_by_id"),
-	path('account/<uuid:id>/change', views.UpdateAccountView.as_view(), name="account_by_id"),
-	path('account/handle/<str:handle>', views.AccountByHandleView.as_view(), name="account_by_handle"),
+	path('account/id/<uuid:id>', views.AccountByIDView.as_view(), name="account_by_id"),
+	path('account/id/<uuid:id>/change', views.UpdateAccountView.as_view(), name="account_by_id"),
+	path('account/<str:handle>', views.AccountByHandleView.as_view(), name="account_by_handle"),
 	path('auth', include('rest_framework.urls', namespace='rest_framework')),
 	path('', include(router.urls))
 ]

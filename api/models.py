@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .managers import AccountManager
+from django.utils.translation import gettext_lazy as _
 
 import uuid
 import string
@@ -9,13 +10,20 @@ from datetime import datetime, timedelta, timezone
 
 # Create your models here.
 class Account(AbstractUser):
+	class UserType(models.TextChoices):
+		BUSINESS = 'BUS', _('Business')
+		INFLUENCER = 'INF', _('Influencer')
+
+	#Required Fields.
 	username = None
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	email = models.EmailField(unique=True)
-	handle = models.CharField(max_length=50, blank=True)
+	handle = models.CharField(max_length=50, unique=True, blank=False)
 	email_verified = models.BooleanField(default=False)
+	user_type = models.CharField(max_length=3, choices=UserType.choices, default=UserType.INFLUENCER)
 
-	avatar_url = models.ImageField(upload_to="images/profiles/", blank=True, null=True)
+	# Non Required Fields.
+	avatar_url = models.ImageField(upload_to="images/avatars/", blank=True, null=True)
 	name = models.CharField(max_length=100, blank=True)
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = []

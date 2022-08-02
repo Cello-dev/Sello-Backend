@@ -16,12 +16,12 @@ class UpdateAccountSerializer(serializers.ModelSerializer): # Fields that are up
 class PublicAccountSerializer(serializers.ModelSerializer): # Public Data.
 	class Meta:
 		model = Account
-		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name')
+		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name', 'user_type')
 
 class PrivateAccountSerializer(serializers.ModelSerializer): # Private Data.
 	class Meta:
 		model = Account
-		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name', 'first_name', 'last_name')
+		fields = ('id', 'email', 'handle', 'date_joined','email_verified', 'avatar_url', 'name', 'first_name', 'last_name', 'user_type')
 
 class LoginSerializer(serializers.ModelSerializer): # Asks for the required fields for login.
 	class Meta:
@@ -39,7 +39,7 @@ class RegisterSerializer(serializers.ModelSerializer): # Asks for the required f
 		return account
 	class Meta:
 		model = Account
-		fields = ('email', 'password', 'handle')
+		fields = ('email', 'password', 'handle', 'user_type')
 
 class ForgotPasswordSerializer(serializers.ModelSerializer): # Asks for the required fields for forgot password.
 	class Meta:
