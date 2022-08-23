@@ -33,6 +33,18 @@ class Account(AbstractUser):
 	def __str__(self):
 		return str(self.id) + " : " + str(self.email)
 
+
+class Product(models.Model):
+	owner = models.ForeignKey(Account, on_delete=models.CASCADE)
+	name = models.CharField(max_length=150)
+	description = models.TextField(max_length=300)
+	tag_list = models.TextField(blank=True, default='[]')
+	created_date = models.DateField(auto_now=True, editable=False)
+	last_modified = models.DateField(auto_now=True)
+
+	def __str__(self):
+		return str(self.name)
+
 class MyAbstractToken(models.Model):
 	def generate_expiry(time_delta):
 		return datetime.now(timezone.utc).astimezone() + time_delta
