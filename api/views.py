@@ -25,11 +25,26 @@ class AccountByIDView(generics.RetrieveAPIView):
 	permission_classes = (IsAuthenticated,)
 	lookup_field = "id"
 
+class AccountByTokenView(APIView):
+	permission_classes = (IsAuthenticated,)
+	def get(self, request):
+		try:
+			auth = request.headers["Authorization"]
+			token = auth[6:] # Trim Auth Token
+			token_record = Token.objects.get(key=token) # Search for matching token
+			user = PrivateAccountSerializer(token_record.user) # Serialize associated account data.
+			return Response({'msg':user.data}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'error':str(e)}, status=status.HTTP_403_FORBIDDEN)
+
 class UpdateAccountView(generics.UpdateAPIView):
 	serializer_class = UpdateAccountSerializer
 	permission_classes = (IsAuthenticated,)
 	parser_classes = (MultiPartParser, FormParser)
 	lookup_field = "id"
+
+	def update(self, request, *args, **kwargs):
+		return super().update(request, *args, **kwargs)
 	
 	def get_queryset(self):
 		queryset = Account.objects.filter(id=self.request.user.id)
