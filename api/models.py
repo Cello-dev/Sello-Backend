@@ -41,7 +41,8 @@ class Product(models.Model):
 	tag_list = models.TextField(blank=True, default='[]')
 	created_date = models.DateField(auto_now=True, editable=False)
 	last_modified = models.DateField(auto_now=True)
-
+	thumb_nail = models.ImageField(upload_to="images/products/", blank=True, null=True)
+	
 	def __str__(self):
 		return str(self.name)
 
