@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework import serializers
 
 
@@ -67,4 +68,12 @@ class TokenSerializer(serializers.Serializer): # Asks for the required fields fo
 	key = serializers.CharField(max_length=8)
 
 
+class PublicProductSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Product
+		fields = ('owner', 'name', 'description', 'tag_list', 'created_date', 'last_modified', 'thumb_nail')
 
+class PrivateProductSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Product
+		fields = '__all__'

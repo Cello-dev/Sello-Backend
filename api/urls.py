@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
 	path('me', views.AccountByTokenView.as_view(), name='me'),
+	path('me/products', views.ProductsByTokenView.as_view(), name='me/products'),
 	path('login', views.LoginView.as_view(), name="login"),
 	path('register', views.RegisterView.as_view(), name="register"),
 	path('verifyemail', views.VerifyEmailView.as_view(), name="verifyemail"),
