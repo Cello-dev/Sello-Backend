@@ -1,3 +1,5 @@
+from itertools import product
+from os import stat
 from rest_framework import generics, viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +14,25 @@ from api.gmail import send_email, make_verify_email, make_reset_email
 from .serializers import *
 from .models import Account, VerifyEmailToken, ResetPasswordToken
 
+def tokenFromRequest(request):
+	auth = request.headers["Authorization"]
+	token = auth[6:] # Trim Auth Token
+	token_record = Token.objects.get(key=token) # Search for matching token
+	return token_record
+	
+
 # Create your views here.
+class ProductsByTokenView(APIView):
+	permission_classes = (IsAuthenticated,)
+	def get(self, request):
+		try:
+			token_record = tokenFromRequest(request) 
+			products = Product.objects.filter(owner=token_record.user)
+			serialized_products = PrivateProductSerializer(products, many=True)
+			return Response({'msg':serialized_products.data}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'error':str(e)}, status=status.HTTP_403_FORBIDDEN)
+
 class AccountByHandleView(generics.RetrieveAPIView):
 	queryset = Account.objects.all()
 	serializer_class = PublicAccountSerializer
@@ -29,9 +49,7 @@ class AccountByTokenView(APIView):
 	permission_classes = (IsAuthenticated,)
 	def get(self, request):
 		try:
-			auth = request.headers["Authorization"]
-			token = auth[6:] # Trim Auth Token
-			token_record = Token.objects.get(key=token) # Search for matching token
+			token_record = tokenFromRequest(request) 
 			user = PrivateAccountSerializer(token_record.user) # Serialize associated account data.
 			return Response({'msg':user.data}, status=status.HTTP_200_OK)
 		except Exception as e:
